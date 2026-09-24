@@ -1,18 +1,71 @@
 # Manufacturing Quality Prediction
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://manufacturing-quality-prediction.streamlit.app/)
+[![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
+[![Scikit-Learn](https://img.shields.io/badge/scikit--learn-1.8.0-orange.svg)](https://scikit-learn.org/)
+[![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
+
+🔗 **Live Interactive App:** [https://manufacturing-quality-prediction.streamlit.app/](https://manufacturing-quality-prediction.streamlit.app/)
+
+---
+
 **Author:** Poojan Chauhan  
 **Program:** IBM SkillsBuild Data Analytics with AI Academic Internship  
 **Conducted by:** BharatCares in association with AICTE
 
-## Project overview
+---
 
-Analyze semiconductor manufacturing sensor measurements and flag potential failed products
-for inspection. The project includes data quality analysis, visualizations, leakage-aware
-preprocessing, comparison of three classifiers, training-only threshold selection, held-out
-evaluation, validated predictions and optional Streamlit application code.
+## Project Overview
 
-This is an educational prototype using historical manufacturing data. A predicted pass is
-not a quality certificate, and failure scores are not calibrated failure probabilities.
+In semiconductor fabrication, early detection of defective chips is critical for minimizing yield losses and manufacturing costs. This project builds an end-to-end, leakage-free machine learning pipeline on the **SECOM** dataset (1,567 production runs and 590 sensor signals) to flag defective wafers for physical inspection before packaging.
+
+Key highlights:
+- **Data Quality & Leakage Prevention:** Preprocessing steps (missingness filtering, median imputation, variance thresholding, standard scaling) are fitted strictly within training folds.
+- **Model Comparison:** Evaluates class-weighted Logistic Regression, Random Forest, and Extra Trees using 5-fold Stratified Cross-Validation on Average Precision (AP).
+- **Threshold Optimization for Recall:** In defect detection, a false negative (missed defect reaching client) is much costlier than a false positive (inspection re-test). The decision threshold is tuned to maximize **$F_2$-Score** on out-of-fold predictions.
+- **Interactive Streamlit Web Dashboard:** Includes live single-wafer inspection, batch CSV quality scoring, interactive charts, and model explainability.
+
+---
+
+## Visualizations & Model Insights
+
+All visualizations are generated from the experimental evaluation pipeline in `PoojanChauhan_ManufacturingQualityPrediction.ipynb`.
+
+### 1. Data Quality & Sensor Missingness
+![Data Quality and Missing Readings](assets/chart_1.png)
+* **Left Panel:** Extreme class imbalance in the training cohort (1,463 Pass vs 104 Fail records, ~6.6% failure prevalence).
+* **Right Panel:** Sensor missing-data profile. Several anonymous sensor channels exhibit over 50–60% missing values, necessitating robust missing-value pruning (>60% threshold) and median imputation prior to feature selection.
+
+---
+
+### 2. Sensor Correlation Structure
+![Sensor Correlations](assets/chart_2.png)
+* Pairwise Pearson correlation heatmap across representative non-constant sensor channels.
+* Strong collinearity clusters appear across multiple sensor stages, demonstrating the need for automated feature ranking (ANOVA F-statistic) to eliminate redundant signals.
+
+---
+
+### 3. Model Benchmark & Decision Threshold Tuning
+![Model Benchmark and Threshold Tuning](assets/chart_3.png)
+* **Left Panel (5-Fold CV Average Precision):** Random Forest achieves the strongest mean Average Precision ($0.21 \pm 0.04$), significantly outperforming the naive baseline (~0.067).
+* **Right Panel ($F_2$ Threshold Optimization):** At the standard 0.50 classification threshold, extreme class imbalance causes the model to predict pass on 100% of samples. By sweeping the decision threshold on out-of-fold probabilities and maximizing $F_2$, an operational threshold of **0.1377** is selected, striking an optimal balance between defect recall and inspection workload.
+
+---
+
+### 4. Held-Out Test Set Performance
+![Test Evaluation Confusion Matrix and Curves](assets/chart_4.png)
+* **Confusion Matrix (Left):** On 314 held-out production runs (21 real defects), the tuned Random Forest captures **13 of 21 defects (61.9% recall)** with 231 true passes correctly identified.
+* **Precision-Recall Curve (Center):** Demonstrates sustained detection capability over random guessing.
+* **ROC Curve (Right):** Attains an **AUC of 0.7972**, confirming robust ranking discrimination between passing and defective semiconductor units.
+
+---
+
+### 5. Top Predictive Sensor Features
+![Top Predictive Sensor Signals](assets/chart_5.png)
+* Gini feature importance ranking for the top 15 discriminative sensors in the trained Random Forest classifier.
+* Highlights primary sensor channels that correlate most strongly with semiconductor process deviations.
+
+---
 
 ## Submission files
 
