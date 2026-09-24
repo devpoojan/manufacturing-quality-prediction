@@ -1,0 +1,12 @@
+# Python 3.12 recommended; Python 3.11 or newer required.
+# Core versions used for the saved notebook results and app checks.
+numpy==2.3.5
+pandas==2.2.3
+scikit-learn==1.8.0
+matplotlib==3.10.8
+streamlit==1.64.0
+ipython==9.17.1
+ipykernel==7.3.0
+nbformat==5.11.1
+# Local notebook interface; not needed for Streamlit-only hosting.
+jupyterlab>=4.2,<5
